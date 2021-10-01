@@ -4,7 +4,10 @@ import Web3 from 'web3';
 import { create } from 'ipfs-http-client'
 import Image from '../abis/Image.json'
 
-const client = create('https://ipfs.infura.io:5001/api/v0')
+// const bootstrapNode = "172.16.0.115"
+
+// const client = create('https://ipfs.infura.io:5001/api/v0')
+const client = create('/ip4/127.0.0.1/tcp/5001')
 
 class App extends Component {
 
