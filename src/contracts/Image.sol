@@ -1,24 +1,15 @@
 pragma solidity 0.5.0;
 
 contract Image {
-  // Smart Contract Code Goes Here...
-  address public owner;
-  uint public last_completed_migration;
+    string imageHash;
+    
+    // Write Function
+    function set(string memory _imageHash) public {
+        imageHash = _imageHash;
+    }
 
-  constructor() public {
-    owner = msg.sender;
-  }
-
-  modifier restricted() {
-    if (msg.sender == owner) _;
-  }
-
-  function setCompleted(uint completed) public restricted {
-    last_completed_migration = completed;
-  }
-
-  function upgrade(address new_address) public restricted {
-    Migrations upgraded = Migrations(new_address);
-    upgraded.setCompleted(last_completed_migration);
-  }
+    // Read Function
+    function get() public view returns (string memory) {
+        return imageHash;
+    }
 }
