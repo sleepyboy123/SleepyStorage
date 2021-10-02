@@ -4,10 +4,10 @@ import Web3 from 'web3';
 import { create } from 'ipfs-http-client'
 import Image from '../abis/Image.json'
 
-// const bootstrapNode = "172.16.0.115"
-
 // const client = create('https://ipfs.infura.io:5001/api/v0')
 const client = create('/ip4/127.0.0.1/tcp/5001')
+
+const payableAddress = "0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6";
 
 class App extends Component {
 
@@ -30,6 +30,9 @@ class App extends Component {
     const web3 = window.web3
     const accounts = await web3.eth.getAccounts()
     const networkId = await web3.eth.net.getId()
+    const gasPrice = await web3.eth.getGasPrice()
+    console.log(gasPrice)
+
     const networkData = Image.networks[networkId]
     this.setState({ 
       account: accounts[0],
@@ -63,28 +66,42 @@ class App extends Component {
   getFile = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-    const reader = new window.FileReader();
-    reader.readAsArrayBuffer(file)
-    reader.onloadend = () => {
-      this.setState({
-        buffer: Buffer(reader.result)
-      })
+    // Handles situation where file is not uploaded
+    if (file !== undefined) {
+      const reader = new window.FileReader();
+      reader.readAsArrayBuffer(file)
+      reader.onloadend = () => {
+        this.setState({
+          buffer: Buffer(reader.result)
+        })
+      }
     }
   }
 
   onSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const added = await client.add(this.state.buffer)
-      const imageHash = added.path 
-      // Set Gas Price Here https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send
-      this.state.contract.methods.set(imageHash).send({ from: this.state.account}).then((r) => {
-        this.setState({
-          imageHash: added.path 
+    if (this.state.buffer) {
+      try {
+        const added = await client.add(this.state.buffer)
+        const imageHash = added.path 
+        // Set Gas Price Here https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send
+        this.state.contract.methods.set(imageHash).send({ from: this.state.account, gasPrice: '20000000000000' }).then((r) => {
+          this.setState({imageHash})
         })
-      })
-    } catch (error) {
-      console.error(error)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
+  checkProof = async (event) => {
+    event.preventDefault();
+    if (this.imageHash) {
+      try {
+        console.log('Check Proof')
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 
@@ -110,7 +127,10 @@ class App extends Component {
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                <img style={{height: 200, width: 200}} src={'https://ipfs.infura.io/ipfs/' + this.state.imageHash} className="App-logo" alt="logo" />
+                <img style={{height: 200, width: 200}} 
+                  onError={(e) => {e.target.onerror = null; e.target.src="https://hotemoji.com/images/dl/j/sleepy-emoji-by-twitter.png"}} 
+                  src={'http://127.0.0.1:8080/ipfs/' + this.state.imageHash} className="App-logo" alt="logo" 
+                />
                 <h2 style={{paddingTop: 15, paddingBottom: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
                   <input type="file" onChange={this.getFile}/>
