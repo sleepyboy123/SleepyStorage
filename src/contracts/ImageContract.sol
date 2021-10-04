@@ -38,7 +38,6 @@ contract ImageContract {
         // 
     }
 
-    
     // Storage and Memory keywords in Solidity are like a Computer's hard drive and RAM
     // memory is a temporary place to store data whereas Storage holds data between function calls.
     // Once execution stops, memory is completely wiped off for the next execution

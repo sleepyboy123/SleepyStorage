@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import './App.css';
 import Web3 from 'web3';
 import { create } from 'ipfs-http-client'
-import Image from '../abis/Image.json'
+import Image from '../abis/ImageContract.json'
 import Loader from "react-loader-spinner";
 
 // const client = create('https://ipfs.infura.io:5001/api/v0')
@@ -16,7 +16,8 @@ class App extends Component {
     super(props);
     this.state = {
       buffer: null,
-      imageHash: '',
+      description: null,
+      images: [],
       account: '',
       contract: null,
       loading: false,
@@ -43,25 +44,31 @@ class App extends Component {
     const web3 = window.web3
     const accounts = await web3.eth.getAccounts()
     const networkId = await web3.eth.net.getId()
-    const gasPrice = await web3.eth.getGasPrice()
-    console.log(gasPrice)
 
     const networkData = Image.networks[networkId]
     this.setState({ 
       account: accounts[0],
     })
+
     if (networkData) {
       // Fetch Contract
       // abi describes how the smart contract works
+      this.setState({loading: true})
       const abi = Image.abi
       const address = networkData.address
       const contract = web3.eth.Contract(abi, address)
       this.setState({contract})
-      const imageHash = await contract.methods.get().call()
-      this.setState({imageHash})
+      const imageCount = await contract.methods.imageCount().call()
+      for (var i = 1; i <= imageCount; i++) {
+        const image = await contract.methods.images(i).call()
+        this.setState({
+          images: [...this.state.images, image]
+        })
+      }
     } else {
       window.alert('Smart Contract not deployed to detected network')
     }
+    this.setState({loading: false})
   }
 
   // Example Path: QmenyRPcPjghG1RJ3PVSFVkyhEMaDxnHr8LFsbhV7httKN
@@ -80,14 +87,18 @@ class App extends Component {
     }
   }
 
+  handleChange=(e)=>{
+    this.setState({description: e.target.value})
+  }
+  
   onSubmit = async (event) => {
     event.preventDefault();
     if (this.state.buffer) {
       try {
         this.setState({loading: true})
         const added = await client.add(this.state.buffer)
-        const imageHash = added.path 
-        this.state.contract.methods.uploadImage(imageHash, 'Test').send({ from: this.state.account }).then((r) => {
+        const imageHash = added.path
+        this.state.contract.methods.uploadImage(imageHash, this.state.description).send({ from: this.state.account }).then((r) => {
           this.setState({imageHash})
         })
       } catch (error) {
@@ -122,15 +133,19 @@ class App extends Component {
                 { this.state.loading ?
                     <Loader type="Audio" color="#00BFFF" height={80} width={80} />
                   :
-                  <img style={{height: 200, width: 200}} 
-                    onError={(e) => {e.target.onerror = null; e.target.src="https://hotemoji.com/images/dl/j/sleepy-emoji-by-twitter.png"}} 
-                    src={'http://127.0.0.1:8080/ipfs/' + this.state.imageHash} className="App-logo" alt="logo" 
-                  />
+                    <ImageContainer images={this.state.images} />
                 }
-
                 <h2 style={{paddingTop: 15, paddingBottom: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
                   <input type="file" onChange={this.getFile}/>
+                  <input
+                    id="imageDescription"
+                    type="text"
+                    value={this.state.value} 
+                    onChange={this.handleChange}
+                    className="form-control"
+                    placeholder="Image description..."
+                  required />
                   <input type="submit"/>
                 </form> 
               </div>
@@ -143,3 +158,35 @@ class App extends Component {
 }
 
 export default App;
+
+// Image Container Functional Component
+function ImageContainer(props) {
+  const images = props.images;
+  console.log(images)
+  const imageRow = images.map((image, key) =>
+    <tr key={key}>
+      <td>
+        <img style={{height: 200, width: 200}} 
+        onError={(e) => {e.target.onerror = null; e.target.src="https://hotemoji.com/images/dl/j/sleepy-emoji-by-twitter.png"}} 
+        src={'http://127.0.0.1:8080/ipfs/' + image.imageHash} className="App-logo" alt="logo" 
+        /> 
+      </td>
+      <td>{image.description}</td>
+      <td>{window.web3.utils.fromWei(image.paidAmount.toString(), 'Ether')} ETH</td>
+      <td>
+        <button>Work In Progress</button>
+      </td>
+    </tr>
+  );
+  return (
+    <table>
+      <tr>
+        <th>Image</th>
+        <th>Description</th>
+        <th>Paid Amount</th>
+        <th>Cool Button</th>
+      </tr>
+      {imageRow}
+    </table>
+  );
+}
