@@ -7,6 +7,7 @@ contract ImageContract {
     // Store Images
     uint public imageCount = 0;
     address owner;
+    address payable node = 0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6;
     mapping(uint => Image) public images;
 
     struct Image {
@@ -32,7 +33,6 @@ contract ImageContract {
         string imageHash,
         string description,
         uint paidAmount,
-        address payable owner,
         uint256 uploadTime
     );
 
@@ -66,21 +66,19 @@ contract ImageContract {
         emit ImageCreated(imageCount, _imageHash, _description, 0, msg.sender, block.timestamp);
     }
 
-    // Tip Image Owner
-    function payImage(uint _id) public payable {
+    // Pay the Node
+    function payNode(uint _id) public payable {
         // Make sure the id is valid
         require(_id > 0 && _id <= imageCount);
         // Fetch the image
         Image memory _image = images[_id];
-        // Fetch the owner
-        address payable _owner = _image.owner;
         // Pay the owner by sending them Ether
-        address(_owner).transfer(msg.value);
+        address(node).transfer(msg.value);
         // Increment the paid amount
         _image.paidAmount = _image.paidAmount + msg.value;
         // Update the image
         images[_id] = _image;
         // Trigger an event
-        emit ImageTipped(_id, _image.imageHash, _image.description, _image.paidAmount, _owner, _image.uploadTime);
+        emit ImageTipped(_id, _image.imageHash, _image.description, _image.paidAmount, _image.uploadTime);
     }
 }

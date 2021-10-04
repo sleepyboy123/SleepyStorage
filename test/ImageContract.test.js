@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { assert, expect } = require('chai');
 const ImageContract = artifacts.require("ImageContract");
 
 require('chai')
@@ -66,7 +66,7 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
             oldOwnerBalance = new web3.utils.BN(oldOwnerBalance)
 
             // Wei is like Ethereums Pennies 1 Ether = 1,000,000,000,000,000,000 Wei
-            result = await image.payImage(imageCount, { from: tipper, value: web3.utils.toWei('1', 'Ether') })
+            result = await image.payNode(imageCount, { from: tipper, value: web3.utils.toWei('1', 'Ether') })
 
             // SUCCESS
             const event = result.logs[0].args
@@ -74,23 +74,16 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
             assert.equal(event.imageHash, imageHash, 'Image Hash is Correct')
             assert.equal(event.description, 'Test Description', 'Description is Correct')
             assert.equal(event.paidAmount, '1000000000000000000', 'Paid Amount is Correct')
-            assert.equal(event.owner, owner, 'Owner is Correct')
 
             // Check that owner received funds
             let newOwnerBalance
             newOwnerBalance = await web3.eth.getBalance(owner)
             newOwnerBalance = new web3.utils.BN(newOwnerBalance)
 
-            let paidAmount 
-            paidAmount = web3.utils.toWei('1', 'Ether')
-            paidAmount = new web3.utils.BN(paidAmount)
-
-            const expectedBalance = oldOwnerBalance.add(paidAmount)
-        
-            assert.equal(newOwnerBalance.toString(), expectedBalance.toString())
+            assert.notEqual(newOwnerBalance, oldOwnerBalance, 'Money has been Deducted')
 
             // FAILURE Tipping Image that does not exist
-            await image.payImage(99, { from: owner, value: web3.utils.toWei('1', 'Ether') }).should.be.rejected;
+            await image.payNode(99, { from: owner, value: web3.utils.toWei('1', 'Ether') }).should.be.rejected;
         })
     })
 })
