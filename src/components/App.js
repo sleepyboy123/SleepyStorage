@@ -130,15 +130,11 @@ class App extends Component {
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                { this.state.loading ?
-                    <Loader type="Audio" color="#00BFFF" height={80} width={80} />
-                  :
-                    <ImageContainer images={this.state.images} />
-                }
-                <h2 style={{paddingTop: 15, paddingBottom: 15}}>Upload File</h2>
+              <h2 style={{paddingTop: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
-                  <input type="file" onChange={this.getFile}/>
+                  <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>
                   <input
+                    style={{marginTop: 15}}
                     id="imageDescription"
                     type="text"
                     value={this.state.value} 
@@ -146,11 +142,24 @@ class App extends Component {
                     className="form-control"
                     placeholder="Image description..."
                   required />
-                  <input type="submit"/>
+                  <button style={{marginTop: 15}} type="submit" class="btn btn-primary btn-block btn-lg">Upload</button>
                 </form> 
               </div>
             </main>
           </div>
+            { this.state.loading ?
+              <div className="row" style={{justifyContent: "center", marginTop: 30}}>
+                  <main role="main">
+                    <Loader type="Circles" color="#00BFFF" height={300} width={300} />
+                  </main>
+              </div>
+              :
+              <div className="row">
+                  <main role="main" className="col-lg-12 d-flex text-center">
+                    <ImageContainer images={this.state.images} />
+                  </main>
+              </div>
+            }
         </div>
       </div>
     );
@@ -162,7 +171,6 @@ export default App;
 // Image Container Functional Component
 function ImageContainer(props) {
   const images = props.images;
-  console.log(images)
   const imageRow = images.map((image, key) =>
     <tr key={key}>
       <td>
@@ -179,13 +187,13 @@ function ImageContainer(props) {
     </tr>
   );
   return (
-    <table>
-      <tr>
+    <table class="table" style={{marginTop: 15}}>
+      <thead class="thead-dark">
         <th>Image</th>
         <th>Description</th>
         <th>Paid Amount</th>
         <th>Cool Button</th>
-      </tr>
+      </thead>
       {imageRow}
     </table>
   );
