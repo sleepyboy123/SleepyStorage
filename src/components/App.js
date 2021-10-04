@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import Web3 from 'web3';
 import { create } from 'ipfs-http-client'
@@ -168,10 +168,16 @@ class App extends Component {
 
 export default App;
 
+function bnToDate(bn) {
+  let ms = bn.toString() * 1000
+  let date = new Date(ms)
+  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() 
+}
+
 // Image Container Functional Component
 function ImageContainer(props) {
   const images = props.images;
-  const imageRow = images.map((image, key) =>
+  const imageRow = images.map((image, key) => 
     <tr key={key}>
       <td>
         <img style={{height: 200, width: 200}} 
@@ -179,10 +185,11 @@ function ImageContainer(props) {
         src={'http://127.0.0.1:8080/ipfs/' + image.imageHash} className="App-logo" alt="logo" 
         /> 
       </td>
-      <td>{image.description}</td>
-      <td>{window.web3.utils.fromWei(image.paidAmount.toString(), 'Ether')} ETH</td>
-      <td>
-        <button>Work In Progress</button>
+      <td style={{verticalAlign: 'middle'}}>{image.description}</td>
+      <td style={{verticalAlign: 'middle'}}>{window.web3.utils.fromWei(image.paidAmount.toString(), 'Ether')} ETH</td>
+      <td style={{verticalAlign: 'middle'}}>{bnToDate(image.uploadTime)}</td>
+      <td style={{verticalAlign: 'middle'}}>
+        <button class="btn btn-primary btn-block btn-lg">WIP</button>
       </td>
     </tr>
   );
@@ -192,6 +199,7 @@ function ImageContainer(props) {
         <th>Image</th>
         <th>Description</th>
         <th>Paid Amount</th>
+        <th>Upload Time</th>
         <th>Cool Button</th>
       </thead>
       {imageRow}

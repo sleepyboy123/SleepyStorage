@@ -3,10 +3,10 @@ pragma solidity 0.5.0;
 contract ImageContract {
     // Variable with global scope, stored on blockchain
     // _variables are used for local variables
-
     string imageHash;
     // Store Images
     uint public imageCount = 0;
+    address owner;
     mapping(uint => Image) public images;
 
     struct Image {
@@ -14,7 +14,8 @@ contract ImageContract {
         string imageHash;
         string description;
         uint paidAmount;
-        address payable author;
+        address payable owner;
+        uint256 uploadTime;
     }
 
     event ImageCreated(
@@ -22,7 +23,8 @@ contract ImageContract {
         string imageHash,
         string description,
         uint paidAmount,
-        address payable author
+        address payable owner,
+        uint256 uploadTime
     );
 
     event ImageTipped(
@@ -30,7 +32,8 @@ contract ImageContract {
         string imageHash,
         string description,
         uint paidAmount,
-        address payable author
+        address payable owner,
+        uint256 uploadTime
     );
 
     // Called when Smart Contract is deployed to the block chain
@@ -57,10 +60,10 @@ contract ImageContract {
         // Increment Image ID
         imageCount++;
         // Add Image to Contract
-        images[imageCount] = Image(imageCount, _imageHash, _description, 0, msg.sender);
+        images[imageCount] = Image(imageCount, _imageHash, _description, 0, msg.sender, block.timestamp);
 
         // Trigger an Event
-        emit ImageCreated(imageCount, _imageHash, _description, 0, msg.sender);
+        emit ImageCreated(imageCount, _imageHash, _description, 0, msg.sender, block.timestamp);
     }
 
     // Tip Image Owner
@@ -69,15 +72,15 @@ contract ImageContract {
         require(_id > 0 && _id <= imageCount);
         // Fetch the image
         Image memory _image = images[_id];
-        // Fetch the author
-        address payable _author = _image.author;
-        // Pay the author by sending them Ether
-        address(_author).transfer(msg.value);
+        // Fetch the owner
+        address payable _owner = _image.owner;
+        // Pay the owner by sending them Ether
+        address(_owner).transfer(msg.value);
         // Increment the paid amount
         _image.paidAmount = _image.paidAmount + msg.value;
         // Update the image
         images[_id] = _image;
         // Trigger an event
-        emit ImageTipped(_id, _image.imageHash, _image.description, _image.paidAmount, _author);
+        emit ImageTipped(_id, _image.imageHash, _image.description, _image.paidAmount, _owner, _image.uploadTime);
     }
 }

@@ -5,7 +5,7 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
-contract('ImageContract', ([deployer, author, tipper]) => {
+contract('ImageContract', ([deployer, owner, tipper]) => {
     let image
 
     // Code that is run before all the tests
@@ -29,7 +29,7 @@ contract('ImageContract', ([deployer, author, tipper]) => {
         const imageHash = 'QmenyRPcPjghG1RJ3PVSFVkyhEMaDxnHr8LFsbhV7httKN'
 
         before(async () => {
-            result = await image.uploadImage(imageHash, 'Test Description', {from: author});
+            result = await image.uploadImage(imageHash, 'Test Description', {from: owner});
             imageCount = await image.imageCount()
         })
 
@@ -41,12 +41,13 @@ contract('ImageContract', ([deployer, author, tipper]) => {
             assert.equal(event.imageHash, imageHash, 'Image Hash is Correct')
             assert.equal(event.description, 'Test Description', 'Description is Correct')
             assert.equal(event.paidAmount, '0', 'Paid Amount is Correct')
-            assert.equal(event.author, author, 'Author is Correct')
+            assert.equal(event.owner, owner, 'Owner is Correct')
+            console.log(event.uploadTime)
 
             // FAILURE Image must have hash
-            await image.uploadImage('', 'Test Description', {from: author}).should.be.rejected;
+            await image.uploadImage('', 'Test Description', {from: owner}).should.be.rejected;
             // FAILURE Image must have description
-            await image.uploadImage('imageHash', '', {from: author}).should.be.rejected;
+            await image.uploadImage('imageHash', '', {from: owner}).should.be.rejected;
         })
         
         it('List Images', async () => {
@@ -55,14 +56,14 @@ contract('ImageContract', ([deployer, author, tipper]) => {
             assert.equal(imageStructure.imageHash, imageHash, 'Image Hash is Correct')
             assert.equal(imageStructure.description, 'Test Description', 'Description is Correct')
             assert.equal(imageStructure.paidAmount, '0', 'Paid Amount is Correct')
-            assert.equal(imageStructure.author, author, 'Author is Correct')
+            assert.equal(imageStructure.owner, owner, 'Owner is Correct')
         })
 
         it('Testing Pay Feature', async () => {
-            // Track the author balance before purchase
-            let oldAuthorBalance
-            oldAuthorBalance = await web3.eth.getBalance(author)
-            oldAuthorBalance = new web3.utils.BN(oldAuthorBalance)
+            // Track the owner balance before purchase
+            let oldOwnerBalance
+            oldOwnerBalance = await web3.eth.getBalance(owner)
+            oldOwnerBalance = new web3.utils.BN(oldOwnerBalance)
 
             // Wei is like Ethereums Pennies 1 Ether = 1,000,000,000,000,000,000 Wei
             result = await image.payImage(imageCount, { from: tipper, value: web3.utils.toWei('1', 'Ether') })
@@ -73,23 +74,23 @@ contract('ImageContract', ([deployer, author, tipper]) => {
             assert.equal(event.imageHash, imageHash, 'Image Hash is Correct')
             assert.equal(event.description, 'Test Description', 'Description is Correct')
             assert.equal(event.paidAmount, '1000000000000000000', 'Paid Amount is Correct')
-            assert.equal(event.author, author, 'Author is Correct')
+            assert.equal(event.owner, owner, 'Owner is Correct')
 
-            // Check that author received funds
-            let newAuthorBalance
-            newAuthorBalance = await web3.eth.getBalance(author)
-            newAuthorBalance = new web3.utils.BN(newAuthorBalance)
+            // Check that owner received funds
+            let newOwnerBalance
+            newOwnerBalance = await web3.eth.getBalance(owner)
+            newOwnerBalance = new web3.utils.BN(newOwnerBalance)
 
             let paidAmount 
             paidAmount = web3.utils.toWei('1', 'Ether')
             paidAmount = new web3.utils.BN(paidAmount)
 
-            const expectedBalance = oldAuthorBalance.add(paidAmount)
+            const expectedBalance = oldOwnerBalance.add(paidAmount)
         
-            assert.equal(newAuthorBalance.toString(), expectedBalance.toString())
+            assert.equal(newOwnerBalance.toString(), expectedBalance.toString())
 
             // FAILURE Tipping Image that does not exist
-            await image.payImage(99, { from: author, value: web3.utils.toWei('1', 'Ether') }).should.be.rejected;
+            await image.payImage(99, { from: owner, value: web3.utils.toWei('1', 'Ether') }).should.be.rejected;
         })
     })
 })
