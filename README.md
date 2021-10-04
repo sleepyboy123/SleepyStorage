@@ -14,4 +14,4 @@ Start Web Server: `npm start`
 Start IPFS on BootNode: `sudo su; ipfs daemon`
 Start IPFS on ClientNode: `sudo su; ipfs daemon`
 Start Ganache `./ganache-2.5.4-linux-x86_64.AppImage`
-When editing contract: `truffle compile; truffle migrate;`
+When editing contract: `truffle compile --reset; truffle migrate --reset;`

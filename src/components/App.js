@@ -7,7 +7,7 @@ import Image from '../abis/Image.json'
 // const client = create('https://ipfs.infura.io:5001/api/v0')
 const client = create('/ip4/127.0.0.1/tcp/5001')
 
-const payableAddress = "0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6";
+// const payableAddress = "0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6";
 
 class App extends Component {
 
@@ -84,8 +84,7 @@ class App extends Component {
       try {
         const added = await client.add(this.state.buffer)
         const imageHash = added.path 
-        // Set Gas Price Here https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send
-        this.state.contract.methods.set(imageHash).send({ from: this.state.account, gasPrice: '20000000000000' }).then((r) => {
+        this.state.contract.methods.set(imageHash).send({ from: this.state.account }).then((r) => {
           this.setState({imageHash})
         })
       } catch (error) {

@@ -1,5 +1,5 @@
-const Image = artifacts.require("Image");
+const ImageContract = artifacts.require("ImageContract");
 
 module.exports = function(deployer) {
-  deployer.deploy(Image);
+  deployer.deploy(ImageContract);
 };
