@@ -3,6 +3,7 @@ import './App.css';
 import Web3 from 'web3';
 import { create } from 'ipfs-http-client'
 import Image from '../abis/Image.json'
+import Loader from "react-loader-spinner";
 
 // const client = create('https://ipfs.infura.io:5001/api/v0')
 const client = create('/ip4/127.0.0.1/tcp/5001')
@@ -18,12 +19,24 @@ class App extends Component {
       imageHash: '',
       account: '',
       contract: null,
+      loading: false,
     }
   }
 
   async componentDidMount() {
     await this.loadWeb3()
     await this.loadBlockchainData()
+  }
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    } if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    } else {
+      window.alert('Please use metamask')
+    }
   }
 
   async loadBlockchainData() {
@@ -51,17 +64,6 @@ class App extends Component {
     }
   }
 
-  async loadWeb3() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-    } if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    } else {
-      window.alert('Please use metamask')
-    }
-  }
-
   // Example Path: QmenyRPcPjghG1RJ3PVSFVkyhEMaDxnHr8LFsbhV7httKN
   getFile = (event) => {
     event.preventDefault();
@@ -82,25 +84,16 @@ class App extends Component {
     event.preventDefault();
     if (this.state.buffer) {
       try {
+        this.setState({loading: true})
         const added = await client.add(this.state.buffer)
         const imageHash = added.path 
-        this.state.contract.methods.set(imageHash).send({ from: this.state.account }).then((r) => {
+        this.state.contract.methods.uploadImage(imageHash, 'Test').send({ from: this.state.account }).then((r) => {
           this.setState({imageHash})
         })
       } catch (error) {
         console.error(error)
       }
-    }
-  }
-
-  checkProof = async (event) => {
-    event.preventDefault();
-    if (this.imageHash) {
-      try {
-        console.log('Check Proof')
-      } catch (error) {
-        console.error(error)
-      }
+      this.setState({loading: false})
     }
   }
 
@@ -126,10 +119,15 @@ class App extends Component {
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                <img style={{height: 200, width: 200}} 
-                  onError={(e) => {e.target.onerror = null; e.target.src="https://hotemoji.com/images/dl/j/sleepy-emoji-by-twitter.png"}} 
-                  src={'http://127.0.0.1:8080/ipfs/' + this.state.imageHash} className="App-logo" alt="logo" 
-                />
+                { this.state.loading ?
+                    <Loader type="Audio" color="#00BFFF" height={80} width={80} />
+                  :
+                  <img style={{height: 200, width: 200}} 
+                    onError={(e) => {e.target.onerror = null; e.target.src="https://hotemoji.com/images/dl/j/sleepy-emoji-by-twitter.png"}} 
+                    src={'http://127.0.0.1:8080/ipfs/' + this.state.imageHash} className="App-logo" alt="logo" 
+                  />
+                }
+
                 <h2 style={{paddingTop: 15, paddingBottom: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
                   <input type="file" onChange={this.getFile}/>
