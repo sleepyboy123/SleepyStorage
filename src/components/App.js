@@ -37,7 +37,7 @@ class App extends Component {
     } if (window.web3) {
       window.web3 = new Web3(window.web3.currentProvider)
     } else {
-      window.alert('Please use metamask')
+      window.alert('Please use MetaMask')
     }
   }
 
@@ -86,10 +86,6 @@ class App extends Component {
         })
       }
     }
-  }
-
-  handleChange=(e)=>{
-    this.setState({description: e.target.value})
   }
   
   onSubmit = async (event) => {
@@ -141,15 +137,6 @@ class App extends Component {
               <h2 style={{paddingTop: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
                   <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>
-                  <input
-                    style={{marginTop: 15}}
-                    id="imageDescription"
-                    type="text"
-                    value={this.state.value} 
-                    onChange={this.handleChange}
-                    className="form-control"
-                    placeholder="Image description..."
-                  required />
                   <button style={{marginTop: 15}} type="submit" class="btn btn-primary btn-block btn-lg">Upload</button>
                 </form> 
               </div>

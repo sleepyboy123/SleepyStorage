@@ -29,7 +29,7 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
         const imageHash = 'QmenyRPcPjghG1RJ3PVSFVkyhEMaDxnHr8LFsbhV7httKN'
 
         before(async () => {
-            result = await image.uploadImage(imageHash, 'Test Description', {from: owner});
+            result = await image.uploadImage(imageHash, {from: owner});
             imageCount = await image.imageCount()
         })
 
@@ -39,14 +39,11 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
             const event = result.logs[0].args
             assert.equal(event.id.toNumber(), imageCount.toNumber(), 'ID is Correct')
             assert.equal(event.imageHash, imageHash, 'Image Hash is Correct')
-            assert.equal(event.description, 'Test Description', 'Description is Correct')
             assert.equal(event.paidAmount, '0', 'Paid Amount is Correct')
             assert.equal(event.owner, owner, 'Owner is Correct')
             console.log(event.uploadTime)
 
             // FAILURE Image must have hash
-            await image.uploadImage('', 'Test Description', {from: owner}).should.be.rejected;
-            // FAILURE Image must have description
             await image.uploadImage('imageHash', '', {from: owner}).should.be.rejected;
         })
         
@@ -54,7 +51,6 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
             const imageStructure = await image.images(imageCount)
             assert.equal(imageStructure.id.toNumber(), imageCount.toNumber(), 'ID is Correct')
             assert.equal(imageStructure.imageHash, imageHash, 'Image Hash is Correct')
-            assert.equal(imageStructure.description, 'Test Description', 'Description is Correct')
             assert.equal(imageStructure.paidAmount, '0', 'Paid Amount is Correct')
             assert.equal(imageStructure.owner, owner, 'Owner is Correct')
         })
@@ -72,7 +68,6 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
             const event = result.logs[0].args
             assert.equal(event.id.toNumber(), imageCount.toNumber(), 'ID is Correct')
             assert.equal(event.imageHash, imageHash, 'Image Hash is Correct')
-            assert.equal(event.description, 'Test Description', 'Description is Correct')
             assert.equal(event.paidAmount, '1000000000000000000', 'Paid Amount is Correct')
 
             // Check that owner received funds
@@ -82,7 +77,7 @@ contract('ImageContract', ([deployer, owner, tipper]) => {
 
             assert.notEqual(newOwnerBalance, oldOwnerBalance, 'Money has been Deducted')
 
-            // FAILURE Tipping Image that does not exist
+            // FAILURE Paying for Image that does not exist
             await image.payNode(99, { from: owner, value: web3.utils.toWei('1', 'Ether') }).should.be.rejected;
         })
     })

@@ -7,13 +7,12 @@ contract ImageContract {
     // Store Images
     uint public imageCount = 0;
     address owner;
-    address payable node = 0x6b1EdCf7Fe352Ff2892047D017C6eCE3563442fd;
+    address payable node = 0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6;
     mapping(uint => Image) public images;
 
     struct Image {
         uint id;
         string imageHash;
-        string description;
         uint paidAmount;
         address payable owner;
         uint256 uploadTime;
@@ -22,7 +21,6 @@ contract ImageContract {
     event ImageCreated(
         uint id,
         string imageHash,
-        string description,
         uint paidAmount,
         address payable owner,
         uint256 uploadTime
@@ -31,7 +29,6 @@ contract ImageContract {
     event ImageTipped(
         uint id,
         string imageHash,
-        string description,
         uint paidAmount,
         uint256 uploadTime
     );
@@ -47,12 +44,9 @@ contract ImageContract {
     // Each execution of the Smart Contract has access to the data previously stored on the storage area
 
     // Create Images
-    function uploadImage(string memory _imageHash, string memory _description) public {
+    function uploadImage(string memory _imageHash) public {
         // Check that image hash is not empty
         require(bytes(_imageHash).length > 0);
-
-        // Check that image description is not empty
-        require(bytes(_description).length > 0);
 
         // Check that image description is not empty
         require(msg.sender != address(0));
@@ -60,10 +54,10 @@ contract ImageContract {
         // Increment Image ID
         imageCount++;
         // Add Image to Contract
-        images[imageCount] = Image(imageCount, _imageHash, _description, 0, msg.sender, block.timestamp);
+        images[imageCount] = Image(imageCount, _imageHash, 0, msg.sender, block.timestamp);
 
         // Trigger an Event
-        emit ImageCreated(imageCount, _imageHash, _description, 0, msg.sender, block.timestamp);
+        emit ImageCreated(imageCount, _imageHash, 0, msg.sender, block.timestamp);
     }
 
     // Pay the Node
@@ -79,6 +73,6 @@ contract ImageContract {
         // Update the image
         images[_id] = _image;
         // Trigger an event
-        emit ImageTipped(_id, _image.imageHash, _image.description, _image.paidAmount, _image.uploadTime);
+        emit ImageTipped(_id, _image.imageHash, _image.paidAmount, _image.uploadTime);
     }
 }
