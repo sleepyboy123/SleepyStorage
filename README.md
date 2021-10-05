@@ -6,10 +6,16 @@
 - Periodically submit proof of their continued storage until contract expires
 - Host is compensated for every proof they submit, penalized for missing proof
 
-<!-- Start IPFS NODE -->
+<!-- START IPFS NODE -->
 https://medium.com/@s_van_laar/deploy-a-private-ipfs-network-on-ubuntu-in-5-steps-5aad95f7261b
 <!-- IPFS CORS -->
 `ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"*\"]"`
+<!-- IPFS EXAMPLES -->
+https://docs.ipfs.io/concepts/usage-ideas-examples/
+<!-- IPFS PRIVATE STAMP -->
+https://github.com/mustafarefaey/private-stamp/blob/master/blockchain/contracts/PrivateStamp.sol
+<!-- BLOCKCHAIN GAME -->
+https://github.com/dappuniversity/blockchain_game
 
 ## Setup
 Start Web Server: `npm start`

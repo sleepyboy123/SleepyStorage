@@ -7,7 +7,7 @@ contract ImageContract {
     // Store Images
     uint public imageCount = 0;
     address owner;
-    address payable node = 0xD314035cB64cbb62e9841B0C922CDC8Dc356D8b6;
+    address payable node = 0x6b1EdCf7Fe352Ff2892047D017C6eCE3563442fd;
     mapping(uint => Image) public images;
 
     struct Image {

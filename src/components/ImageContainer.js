@@ -27,7 +27,7 @@ function ImageContainer(props) {
                 <td style={{verticalAlign: 'middle'}}>{window.web3.utils.fromWei(image.paidAmount.toString(), 'Ether')} ETH</td>
                 <td style={{verticalAlign: 'middle'}}>{bnToDate(image.uploadTime)}</td>
                 <td style={{verticalAlign: 'middle'}}>
-                    <button name={image.id} onClick={(event) => {props.payNode(event.target.name)}} class="btn btn-primary btn-block btn-lg">Pay Node</button>
+                    <button name={image.id} onClick={(event) => {props.payNode(event.target.name)}} class="btn btn-primary btn-block btn-lg">Check</button>
                 </td>
                 </tr>
             )
@@ -40,7 +40,7 @@ function ImageContainer(props) {
           <th>Description</th>
           <th>Paid Amount</th>
           <th>Upload Time</th>
-          <th>Cool Button</th>
+          <th>Check Proof of Work</th>
         </thead>
         {imageRow}
       </table>
