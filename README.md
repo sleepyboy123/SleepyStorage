@@ -17,6 +17,8 @@ https://github.com/mustafarefaey/private-stamp/blob/master/blockchain/contracts/
 <!-- BLOCKCHAIN GAME -->
 https://github.com/dappuniversity/blockchain_game
 
+https://medium.com/swlh/ultimate-guide-to-filecoin-breaking-down-filecoin-whitepaper-economics-9212541a5895
+
 ## Setup
 Start Web Server: `npm start`
 Start IPFS on BootNode: `sudo su; ipfs daemon`

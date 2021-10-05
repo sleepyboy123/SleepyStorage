@@ -136,7 +136,7 @@ class App extends Component {
               <div className="content mr-auto ml-auto">
               <h2 style={{paddingTop: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
-                  <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>>
+                  <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>
                   <button style={{marginTop: 15}} type="submit" class="btn btn-primary btn-block btn-lg">Upload</button>
                 </form> 
               </div>
