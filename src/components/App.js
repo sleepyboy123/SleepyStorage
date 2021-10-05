@@ -88,10 +88,6 @@ class App extends Component {
     }
   }
 
-  handleChange=(e)=>{
-    this.setState({description: e.target.value})
-  }
-  
   onSubmit = async (event) => {
     event.preventDefault();
     if (this.state.buffer) {
@@ -99,7 +95,7 @@ class App extends Component {
         this.setState({loading: true})
         const added = await client.add(this.state.buffer)
         const imageHash = added.path
-        this.state.contract.methods.uploadImage(imageHash, this.state.description).send({ from: this.state.account }).then((r) => {
+        this.state.contract.methods.uploadImage(imageHash).send({ from: this.state.account }).then((r) => {
           this.setState({imageHash})
         })
       } catch (error) {
@@ -140,16 +136,7 @@ class App extends Component {
               <div className="content mr-auto ml-auto">
               <h2 style={{paddingTop: 15}}>Upload File</h2>
                 <form onSubmit={this.onSubmit}>
-                  <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>
-                  <input
-                    style={{marginTop: 15}}
-                    id="imageDescription"
-                    type="text"
-                    value={this.state.value} 
-                    onChange={this.handleChange}
-                    className="form-control"
-                    placeholder="Image description..."
-                  required />
+                  <input type="file" accept=".jpg, .jpeg, .png, .bmp, .gif" onChange={this.getFile}/>>
                   <button style={{marginTop: 15}} type="submit" class="btn btn-primary btn-block btn-lg">Upload</button>
                 </form> 
               </div>

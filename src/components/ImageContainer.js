@@ -23,7 +23,6 @@ function ImageContainer(props) {
                     src={'http://127.0.0.1:8080/ipfs/' + image.imageHash} className="App-logo" alt="logo" 
                     /> 
                 </td>
-                <td style={{verticalAlign: 'middle'}}>{image.description}</td>
                 <td style={{verticalAlign: 'middle'}}>{window.web3.utils.fromWei(image.paidAmount.toString(), 'Ether')} ETH</td>
                 <td style={{verticalAlign: 'middle'}}>{bnToDate(image.uploadTime)}</td>
                 <td style={{verticalAlign: 'middle'}}>
@@ -37,7 +36,6 @@ function ImageContainer(props) {
       <table class="table" style={{marginTop: 15}}>
         <thead class="thead-dark">
           <th>Image</th>
-          <th>Description</th>
           <th>Paid Amount</th>
           <th>Upload Time</th>
           <th>Check Proof of Work</th>
